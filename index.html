@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessible Student Portal | University of Ilorin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2c5282',
+                        secondary: '#4299e1',
+                        accent: '#ed8936',
+                        dark: '#1a202c',
+                        light: '#f7fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100vh;
+                z-index: 40;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 30;
+            }
+            .overlay.open {
+                display: block;
+            }
+        }
+        .page-content {
+            transition: opacity 0.3s ease;
+        }
+        .high-contrast {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --accent: #ffff00;
+            --dark: #000000;
+            --light: #ffffff;
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+        .high-contrast .bg-white {
+            background-color: #000 !important;
+            color: #fff !important;
+            border-color: #fff !important;
+        }
+        .high-contrast .text-gray-600, 
+        .high-contrast .text-gray-700, 
+        .high-contrast .text-gray-300, 
+        .high-contrast .text-gray-500,
+        .high-contrast .text-gray-400 {
+            color: #fff !important;
+        }
+        .high-contrast .bg-primary {
+            background-color: #000 !important;
+            color: #fff !important;
+            border: 2px solid #fff;
+        }
+        .high-contrast .bg-gray-100 {
+            background-color: #000 !important;
+        }
+        .high-contrast .shadow-lg,
+        .high-contrast .shadow-md {
+            box-shadow: 0 0 0 2px #fff !important;
+        }
+        .keyboard-nav a:focus, 
+        .keyboard-nav button:focus, 
+        .keyboard-nav input:focus, 
+        .keyboard-nav select:focus, 
+        .keyboard-nav textarea:focus {
+            outline: 3px solid #ff0 !important;
+            outline-offset: 2px;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Accessibility Controls -->
+    <div class="bg-gray-800 text-white p-2 flex flex-wrap gap-3 justify-center items-center">
+        <button id="textSize" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+            <i class="fa-solid fa-text-size mr-1"></i> Text Size
+        </button>
+        <button id="highContrast" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+            <i class="fa-solid fa-moon mr-1"></i> High Contrast
+        </button>
+        <button id="speakPage" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+            <i class="fa-solid fa-volume-up mr-1"></i> Read Page
+        </button>
+        <button id="keyboardHelp" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+            <i class="fa-solid fa-keyboard mr-1"></i> Keyboard Help
+        </button>
+    </div>
+
+    <!-- Skip Navigation -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:px-4 focus:py-2 focus:z-50 focus:ring-2 focus:ring-accent">
+        Skip to main content
+    </a>
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-primary text-white p-3 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="https://schooltry-tertiary-2.s3.eu-west-1.amazonaws.com/institutionLogos/Unilorin_6500995e76d79.jpeg?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJ%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJGMEQCIAGP2EC5y4hlxshlkz9m6TKrkR2UnhIoOuMT9G%2BoBM0pAiAinM1mvI2K1RyV%2Focr9HEs03IIqJgIx5xmcby%2B22cncCrEBQin%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAEaDDM1OTI0MTA4MDkzNSIMksSXke%2Fe0tUM3g5iKpgFZnHid4fDFO9FIng2kf2SZ3jK2NnKBAThjpw8WzTaC1WAzfZreRQK0dl2izUxTRCI%2Fsxh6Wd49pzAcn1JZmUs60UsKnO85%2BeEgXe2meXghOiwHZQPaubWGIG8dEmXWyRi%2BxS1H1A8QzpR3wpD48dtmd6fV%2FtOPuuUA9PFADTR70w6pMUJ8LePwinOpFEXJ9j35kSGfp7%2FPGR7VeiMxMNJZ7QHCRIbaV55L%2B32%2FMxQbl%2FuAB%2FJNNFQFHlSmxQFFvtZOIO%2F14xC2wDdGy5RWOdgTeRcRk1QIG2otFWYd17cf5g8mGX8zQ1VlzfXSLY8Nn9i%2BZSPvc7SbR5Vmg7704M19Odb0AwnU3z0wxiFnrLCws3SbRr3DG1422kGI28nYI3Wo5g7Mz4AmdgxOtySDtdlrHoqEqJ5zAjRDLnNMZ1i3yrZx0HlxNKcOs3nyte5dBuJvpDJ9psMHxsKzWvxsEUVW9j5GKFxAf4XFwjo80YSNL%2FnKtKIy2xBROux%2BLvGTuedQL85gnyoIvZPUzg9gZ00X4uuPCfLAV0VrZNdyCqoZdb9JFLn2HGpIX6%2Bq9vRYu4mCf9d2qEH9H9orOXpVHTYAr1rFcndae8Vvnqu2XckpwiGsJI4vITu8abjd7fnbOl1PXw5Ukv9ASWGRR8tgIrRObGRLD0v0Ky8eIaMtKvZhql5tQgj78aCfFX1%2F6lsA72EXpkckgSxohup0EhHXertNA3Ve6C5AhhjMDlao1QhHWLzvG51k8gt%2Flx%2BXKDMzE7W%2BU7q%2BJl%2BqvbW4mWQ%2B1fztWmoK4wnc7RZvKhK5gMgyAuqm2Agk1Jc8jmcmJDj%2BnAeWy4nCySifR8EQa6VPHtOratsd7Y3gMNExG8P5Rz%2FxJyzgVWWAETGazD49LnDBjqyAdpMfhj4n8WZScN1PJW49C6yn1PRYAXxmziYzDElBVhm2X2TeM7JQd4F2atDBmcMK3L8kgzTFVNPbSc1gUQBgpqr%2FcV%2BHnUc3KbkxXLn%2BONaK%2FExoLoUshBugX2CG%2BcEJv1PVPOIVjKT5%2Ftt9q6Z3a4CrUNzxnB%2FxRmCf2zkUE%2FIxgObXs4lTxYOA5yVnpKg4UJU1%2FwYr3kX0o3cT6U%2Bvbbt%2BKr85ioUsyUU4YqR6iSoBpg%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVHJDP4BTUNERUMW5%2F20250709%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20250709T142606Z&X-Amz-SignedHeaders=host&X-Amz-Expires=604800&X-Amz-Signature=969aed9a19b94d5fb6f0e63d63d02a7714e6a86f9069ef98fc9d39981fdb57e4" alt="Graduation Cap" class="text-2xl mr-2 h-12 w-12" />
+            <div>
+                <h1 class="text-xl font-bold">Unilorin Portal</h1>
+            </div>
+        </div>
+        <button id="menuToggle" class="text-white focus:outline-none focus:ring-2 focus:ring-white">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white w-64 min-h-screen shadow-md md:shadow-none z-40 hidden">
+            <div class="p-4 border-b">
+                <div class="flex items-center mb-4">
+                    <img src="https://schooltry-tertiary-2.s3.eu-west-1.amazonaws.com/institutionLogos/Unilorin_6500995e76d79.jpeg?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJ%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJGMEQCIAGP2EC5y4hlxshlkz9m6TKrkR2UnhIoOuMT9G%2BoBM0pAiAinM1mvI2K1RyV%2Focr9HEs03IIqJgIx5xmcby%2B22cncCrEBQin%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAEaDDM1OTI0MTA4MDkzNSIMksSXke%2Fe0tUM3g5iKpgFZnHid4fDFO9FIng2kf2SZ3jK2NnKBAThjpw8WzTaC1WAzfZreRQK0dl2izUxTRCI%2Fsxh6Wd49pzAcn1JZmUs60UsKnO85%2BeEgXe2meXghOiwHZQPaubWGIG8dEmXWyRi%2BxS1H1A8QzpR3wpD48dtmd6fV%2FtOPuuUA9PFADTR70w6pMUJ8LePwinOpFEXJ9j35kSGfp7%2FPGR7VeiMxMNJZ7QHCRIbaV55L%2B32%2FMxQbl%2FuAB%2FJNNFQFHlSmxQFFvtZOIO%2F14xC2wDdGy5RWOdgTeRcRk1QIG2otFWYd17cf5g8mGX8zQ1VlzfXSLY8Nn9i%2BZSPvc7SbR5Vmg7704M19Odb0AwnU3z0wxiFnrLCws3SbRr3DG1422kGI28nYI3Wo5g7Mz4AmdgxOtySDtdlrHoqEqJ5zAjRDLnNMZ1i3yrZx0HlxNKcOs3nyte5dBuJvpDJ9psMHxsKzWvxsEUVW9j5GKFxAf4XFwjo80YSNL%2FnKtKIy2xBROux%2BLvGTuedQL85gnyoIvZPUzg9gZ00X4uuPCfLAV0VrZNdyCqoZdb9JFLn2HGpIX6%2Bq9vRYu4mCf9d2qEH9H9orOXpVHTYAr1rFcndae8Vvnqu2XckpwiGsJI4vITu8abjd7fnbOl1PXw5Ukv9ASWGRR8tgIrRObGRLD0v0Ky8eIaMtKvZhql5tQgj78aCfFX1%2F6lsA72EXpkckgSxohup0EhHXertNA3Ve6C5AhhjMDlao1QhHWLzvG51k8gt%2Flx%2BXKDMzE7W%2BU7q%2BJl%2BqvbW4mWQ%2B1fztWmoK4wnc7RZvKhK5gMgyAuqm2Agk1Jc8jmcmJDj%2BnAeWy4nCySifR8EQa6VPHtOratsd7Y3gMNExG8P5Rz%2FxJyzgVWWAETGazD49LnDBjqyAdpMfhj4n8WZScN1PJW49C6yn1PRYAXxmziYzDElBVhm2X2TeM7JQd4F2atDBmcMK3L8kgzTFVNPbSc1gUQBgpqr%2FcV%2BHnUc3KbkxXLn%2BONaK%2FExoLoUshBugX2CG%2BcEJv1PVPOIVjKT5%2Ftt9q6Z3a4CrUNzxnB%2FxRmCf2zkUE%2FIxgObXs4lTxYOA5yVnpKg4UJU1%2FwYr3kX0o3cT6U%2Bvbbt%2BKr85ioUsyUU4YqR6iSoBpg%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVHJDP4BTUNERUMW5%2F20250709%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20250709T142606Z&X-Amz-SignedHeaders=host&X-Amz-Expires=604800&X-Amz-Signature=969aed9a19b94d5fb6f0e63d63d02a7714e6a86f9069ef98fc9d39981fdb57e4" alt="Graduation Cap" class="text-2xl mr-2 h-12 w-12" />
+                    <div>
+                        <h1 class="text-xl font-bold">University of Ilorin</h1>
+                        <p class="text-xs text-gray-600">Student Portal</p>
+                    </div>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <p class="text-sm font-medium text-gray-800">John Doe</p>
+                    <p class="text-xs text-gray-600">CSC/20/1234</p>
+                </div>
+            </div>
+            <nav class="p-2">
+                <ul class="space-y-1">
+                    <!-- <li>
+                        <a href="#" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg bg-primary text-white">
+                            <i class="fa-solid fa-chart-line mr-3"></i>
+                            Dashboard
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="#" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                            <i class="fa-solid fa-chart-line mr-3"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-page="courses" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                            <i class="fa-solid fa-book mr-3"></i>
+                            Course Registration
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-page="fees" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                            <i class="fa-solid fa-money-bill mr-3"></i>
+                            Fees Payment
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-page="results" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                            <i class="fa-solid fa-file-lines mr-3"></i>
+                            Exam Results
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-page="support" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                            <i class="fa-solid fa-headset mr-3"></i>
+                            Support
+                        </a>
+                    </li>
+                    <li>
+                        <button id="logoutBtn" class="w-full text-left flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent">
+                            <i class="fa-solid fa-right-from-bracket mr-3"></i>
+                            Logout
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Overlay for mobile sidebar -->
+        <div id="overlay" class="overlay"></div>
+
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 p-4 md:p-6">
+            <section id="login" class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+                <h2 class="text-2xl font-bold mb-6 text-center text-primary">Student Portal Login</h2>
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <input type="text" id="username" name="username" required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                            aria-required="true">
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="password" name="password" required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                            aria-required="true">
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember" class="mr-2">
+                        <label for="remember" class="text-sm text-gray-700">Remember me</label>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                        Login
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Don't have an account? <a href="#register" class="text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Register here</a></p>
+                    <p class="text-sm text-gray-600 mt-2"><a href="#" class="text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Forgot password?</a></p>
+                </div>
+            </section>
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page hidden page-content">
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-primary">Student Dashboard</h1>
+                        <p class="text-gray-600">Welcome back, John Doe! Here's your academic summary.</p>
+                    </div>
+                    <div class="hidden md:block">
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Current Session: 2024/2025</span>
+                    </div>
+                </div>
+                
+                <!-- User Info Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 p-2 rounded-full mr-3">
+                                <i class="fa-solid fa-id-card text-blue-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold">Student Information</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex">
+                                <span class="font-medium w-32">Matric Number:</span>
+                                <span>CSC/20/1234</span>
+                            </li>
+                            <li class="flex">
+                                <span class="font-medium w-32">Level:</span>
+                                <span>400 Level</span>
+                            </li>
+                            <li class="flex">
+                                <span class="font-medium w-32">Faculty:</span>
+                                <span>Faculty of Science</span>
+                            </li>
+                            <li class="flex">
+                                <span class="font-medium w-32">Department:</span>
+                                <span>Computer Science</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-green-100 p-2 rounded-full mr-3">
+                                <i class="fa-solid fa-book text-green-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold">Academic Status</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex justify-between">
+                                <span>Registered Courses:</span>
+                                <span class="font-medium">8</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>Current GPA:</span>
+                                <span class="font-medium">4.52</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>CGPA:</span>
+                                <span class="font-medium">4.35</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>Academic Standing:</span>
+                                <span class="font-medium text-green-600">Excellent</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-orange-100 p-2 rounded-full mr-3">
+                                <i class="fa-solid fa-money-bill-wave text-orange-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold">Financial Status</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex justify-between">
+                                <span>Tuition Fee:</span>
+                                <span class="font-medium">₦75,000</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>Amount Paid:</span>
+                                <span class="font-medium">₦50,000</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>Balance:</span>
+                                <span class="font-medium text-red-600">₦25,000</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span>Due Date:</span>
+                                <span class="font-medium">Dec 15, 2023</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Recent Activities -->
+                <div class="bg-white rounded-lg shadow p-6 mb-8">
+                    <h2 class="text-xl font-semibold mb-4 text-primary">Recent Activities</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="bg-blue-100 p-2 rounded-full mr-3 mt-1">
+                                <i class="fa-solid fa-book text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium">Registered for new courses</p>
+                                <p class="text-sm text-gray-600">You registered for 3 courses: CSC 401, CSC 403, and CSC 405</p>
+                                <p class="text-xs text-gray-500 mt-1">Yesterday at 2:30 PM</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                                <i class="fa-solid fa-download text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium">Downloaded resources</p>
+                                <p class="text-sm text-gray-600">Downloaded lecture notes for CSC 401 - Advanced Programming</p>
+                                <p class="text-xs text-gray-500 mt-1">2 days ago</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-purple-100 p-2 rounded-full mr-3 mt-1">
+                                <i class="fa-solid fa-money-bill text-purple-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium">Fee payment</p>
+                                <p class="text-sm text-gray-600">Made a partial payment of ₦50,000 towards tuition fees</p>
+                                <p class="text-xs text-gray-500 mt-1">5 days ago</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-orange-100 p-2 rounded-full mr-3 mt-1">
+                                <i class="fa-solid fa-file-circle-check text-orange-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium">Exam result released</p>
+                                <p class="text-sm text-gray-600">Results for CSC 202 - Data Structures have been released</p>
+                                <p class="text-xs text-gray-500 mt-1">1 week ago</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <a href="#" data-page="courses" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-book text-blue-600 text-xl"></i>
+                        </div>
+                        <p class="font-medium">Course Registration</p>
+                    </a>
+                    <a href="#" data-page="fees" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-money-bill text-green-600 text-xl"></i>
+                        </div>
+                        <p class="font-medium">Pay Fees</p>
+                    </a>
+                    <a href="#" data-page="results" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-file-lines text-purple-600 text-xl"></i>
+                        </div>
+                        <p class="font-medium">View Results</p>
+                    </a>
+                    <a href="#" data-page="support" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-headset text-orange-600 text-xl"></i>
+                        </div>
+                        <p class="font-medium">Get Support</p>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Courses Page -->
+            <div id="courses" class="page page-content">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-primary">Course Registration</h1>
+                    <p class="text-gray-600">Register for your courses for the 2024/2025 academic session</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-semibold">Available Courses</h2>
+                            <p class="text-sm text-gray-600">Select courses for registration</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <button class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent">
+                                <i class="fa-solid fa-plus mr-2"></i>Add Selected Courses
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Select
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course Code
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course Title
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Units
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Lecturer
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 301</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Advanced Programming</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Prof. Adebayo</div>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 303</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Data Structures & Algorithms</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Dr. Chukwu</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 305</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Database Systems</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Dr. Okafor</div>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary">
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 307</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Computer Networks</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Prof. Ibrahim</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 309</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Software Engineering</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Dr. Musa</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-primary">Registered Courses</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course Code
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course Title
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Units
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 303</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Data Structures & Algorithms</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Approved</span>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <i class="fa-solid fa-trash"></i> Drop
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 305</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Database Systems</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Approved</span>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <i class="fa-solid fa-trash"></i> Drop
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 309</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Software Engineering</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <i class="fa-solid fa-trash"></i> Drop
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-gray-50">
+                                <tr>
+                                    <td colspan="2" class="px-4 py-3 text-right font-medium">Total Units:</td>
+                                    <td class="px-4 py-3 font-medium">9</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fees Page -->
+            <div id="fees" class="page page-content">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-primary">Fees Payment</h1>
+                    <p class="text-gray-600">View and manage your tuition fees for the 2023/2024 academic session</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">Fee Summary</h2>
+                            
+                            <div class="border rounded-lg mb-6">
+                                <div class="bg-gray-50 px-4 py-3 border-b">
+                                    <h3 class="font-medium">2023/2024 Academic Session</h3>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Tuition Fee</span>
+                                        <span class="font-medium">₦75,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Departmental Fee</span>
+                                        <span class="font-medium">₦5,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Faculty Fee</span>
+                                        <span class="font-medium">₦3,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Medical Fee</span>
+                                        <span class="font-medium">₦2,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>ICT Fee</span>
+                                        <span class="font-medium">₦2,500.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 font-medium text-lg">
+                                        <span>Total Fees</span>
+                                        <span>₦87,500.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border rounded-lg">
+                                <div class="bg-gray-50 px-4 py-3 border-b">
+                                    <h3 class="font-medium">Payment Details</h3>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Total Fees Payable</span>
+                                        <span class="font-medium">₦87,500.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Amount Paid</span>
+                                        <span class="font-medium text-green-600">₦50,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 border-b">
+                                        <span>Balance</span>
+                                        <span class="font-medium text-red-600">₦37,500.00</span>
+                                    </div>
+                                    <div class="flex justify-between py-3 font-medium text-lg">
+                                        <span>Payment Status</span>
+                                        <span class="text-yellow-600">Partially Paid</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">Make Payment</h2>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Payment Method</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button class="border rounded-lg p-4 text-center hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <i class="fa-solid fa-credit-card text-2xl mb-2 text-blue-500"></i>
+                                        <p>Card Payment</p>
+                                    </button>
+                                    <button class="border rounded-lg p-4 text-center hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <i class="fa-solid fa-building-columns text-2xl mb-2 text-green-500"></i>
+                                        <p>Bank Transfer</p>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Amount to Pay (₦)</label>
+                                <input type="number" value="37500" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            
+                            <button class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent">
+                                Proceed to Payment
+                            </button>
+                            
+                            <div class="mt-6 p-4 bg-yellow-50 rounded-lg">
+                                <h3 class="font-medium mb-2">Payment Deadline</h3>
+                                <p class="text-sm">Full payment must be completed by <span class="font-medium">December 15, 2023</span> to avoid penalties.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6 mt-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">Payment History</h2>
+                            <ul class="space-y-4">
+                                <li class="border-b pb-3">
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">First Payment</span>
+                                        <span class="text-green-600">₦50,000.00</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600">October 15, 2023</div>
+                                    <div class="text-sm">Transaction ID: TXN-2023-00123</div>
+                                </li>
+                                <li class="border-b pb-3">
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Previous Session</span>
+                                        <span class="text-green-600">₦85,000.00</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600">December 10, 2022</div>
+                                    <div class="text-sm">Transaction ID: TXN-2022-04567</div>
+                                </li>
+                                <li>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Previous Session</span>
+                                        <span class="text-green-600">₦35,000.00</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600">October 5, 2022</div>
+                                    <div class="text-sm">Transaction ID: TXN-2022-03215</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Page -->
+            <div id="results" class="page page-content">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-primary">Exam Results</h1>
+                    <p class="text-gray-600">View your examination results and academic performance</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+                        <div>
+                            <h2 class="text-xl font-semibold">Academic Summary</h2>
+                            <p class="text-sm text-gray-600">Cumulative Grade Point Average (CGPA)</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <select class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option>2023/2024 Academic Session</option>
+                                <option>2022/2023 Academic Session</option>
+                                <option>2021/2022 Academic Session</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="text-sm text-blue-700 mb-1">Current GPA</div>
+                            <div class="text-3xl font-bold text-blue-900">4.52</div>
+                            <div class="text-xs text-gray-600 mt-1">300 Level First Semester</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="text-sm text-green-700 mb-1">CGPA</div>
+                            <div class="text-3xl font-bold text-green-900">4.35</div>
+                            <div class="text-xs text-gray-600 mt-1">Cumulative</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="text-sm text-purple-700 mb-1">Units Completed</div>
+                            <div class="text-3xl font-bold text-purple-900">72</div>
+                            <div class="text-xs text-gray-600 mt-1">Out of 120 required</div>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg">
+                            <div class="text-sm text-orange-700 mb-1">Academic Standing</div>
+                            <div class="text-3xl font-bold text-orange-900">1st Class</div>
+                            <div class="text-xs text-gray-600 mt-1">Excellent</div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-semibold mb-4">Performance Chart</h3>
+                        <div class="h-64 flex items-end justify-between space-x-2">
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 bg-blue-500 rounded-t" style="height: 180px;"></div>
+                                <div class="mt-2 text-sm">100 Level</div>
+                                <div class="font-bold">4.20</div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 bg-blue-500 rounded-t" style="height: 160px;"></div>
+                                <div class="mt-2 text-sm">200 Level</div>
+                                <div class="font-bold">4.25</div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 bg-blue-500 rounded-t" style="height: 200px;"></div>
+                                <div class="mt-2 text-sm">300 Level</div>
+                                <div class="font-bold">4.52</div>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 bg-gray-300 rounded-t" style="height: 100px;"></div>
+                                <div class="mt-2 text-sm">400 Level</div>
+                                <div class="font-bold">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-primary">Course Results - 2023/2024 First Semester</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course Code
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Course Title
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Units
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Test Score
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Exam Score
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Grade
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 301</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Advanced Programming</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">78</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">85</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">A</span>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 303</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Data Structures & Algorithms</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">82</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">76</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">A</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">CSC 305</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Database Systems</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">3</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">75</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">80</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">A</span>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">MAT 301</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Advanced Mathematics</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">2</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">68</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">72</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">B</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">GNS 301</div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm text-gray-900">Entrepreneurship</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">2</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">85</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">78</div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">A</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h3 class="text-lg font-semibold mb-4">Grading System</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Score Range
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Letter Grade
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Grade Point
+                                        </th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Rating
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">70 - 100</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">A</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">5</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Excellent</div>
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">60 - 69</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">B</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">4</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Very Good</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">50 - 59</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">C</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">3</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Good</div>
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">45 - 49</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">D</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">2</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Pass</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">0 - 44</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">F</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">0</div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Fail</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Support Page -->
+            <div id="support" class="page page-content">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-primary">Support Center</h1>
+                    <p class="text-gray-600">Get help, report issues, or provide feedback</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">Submit a Request</h2>
+                            
+                            <form class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Request Type</label>
+                                    <select class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <option>Select request type</option>
+                                        <option>Technical Support</option>
+                                        <option>Academic Issue</option>
+                                        <option>Financial Matter</option>
+                                        <option>Accessibility Request</option>
+                                        <option>Feedback/Suggestion</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Subject</label>
+                                    <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Description</label>
+                                    <textarea rows="6" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Attachment (Optional)</label>
+                                    <div class="flex items-center">
+                                        <input type="file" class="flex-1">
+                                        <button class="ml-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <i class="fa-solid fa-paperclip"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent">
+                                    Submit Request
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6 mt-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">Frequently Asked Questions</h2>
+                            
+                            <div class="space-y-4">
+                                <div class="border-b pb-4">
+                                    <h3 class="font-medium text-lg">How do I reset my password?</h3>
+                                    <p class="text-gray-600 mt-2">You can reset your password by clicking on the "Forgot Password" link on the login page. You will receive an email with instructions to reset your password.</p>
+                                </div>
+                                <div class="border-b pb-4">
+                                    <h3 class="font-medium text-lg">How can I pay my fees online?</h3>
+                                    <p class="text-gray-600 mt-2">Navigate to the Fees Payment section, select your payment method, enter the amount, and follow the instructions to complete your payment securely.</p>
+                                </div>
+                                <div class="border-b pb-4">
+                                    <h3 class="font-medium text-lg">When will my course registration be approved?</h3>
+                                    <p class="text-gray-600 mt-2">Course registration approval typically takes 24-48 hours. If it's been longer, please contact your academic advisor.</p>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-lg">How can I access resources for visually impaired students?</h3>
+                                    <p class="text-gray-600 mt-2">All resources are available in accessible formats. Use the resource download section and select your preferred format (text, audio, braille-ready).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">Contact Information</h2>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <h3 class="font-medium text-lg">Technical Support</h3>
+                                    <p class="text-gray-600 mt-1">
+                                        <i class="fa-solid fa-envelope mr-2"></i>support@unilorin.edu.ng<br>
+                                        <i class="fa-solid fa-phone mr-2 mt-2"></i>+234 123 456 7890
+                                    </p>
+                                    <p class="mt-2">Monday-Friday, 8:00 AM - 5:00 PM</p>
+                                </div>
+                                
+                                <div>
+                                    <h3 class="font-medium text-lg">Academic Support</h3>
+                                    <p class="text-gray-600 mt-1">
+                                        <i class="fa-solid fa-envelope mr-2"></i>academics@unilorin.edu.ng<br>
+                                        <i class="fa-solid fa-phone mr-2 mt-2"></i>+234 123 456 7891
+                                    </p>
+                                    <p class="mt-2">Monday-Friday, 8:00 AM - 4:00 PM</p>
+                                </div>
+                                
+                                <div>
+                                    <h3 class="font-medium text-lg">Accessibility Support</h3>
+                                    <p class="text-gray-600 mt-1">
+                                        <i class="fa-solid fa-envelope mr-2"></i>accessibility@unilorin.edu.ng<br>
+                                        <i class="fa-solid fa-phone mr-2 mt-2"></i>+234 123 456 7892
+                                    </p>
+                                    <p class="mt-2">Monday-Friday, 9:00 AM - 4:00 PM</p>
+                                </div>
+                                
+                                <div class="p-4 bg-blue-50 rounded-lg mt-6">
+                                    <h3 class="font-medium text-lg">Urgent Assistance</h3>
+                                    <p class="text-gray-600 mt-1">For urgent matters outside business hours, please call our emergency line:</p>
+                                    <p class="font-medium mt-2">
+                                        <i class="fa-solid fa-phone mr-2"></i>+234 123 456 7899
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-6 mt-6">
+                            <h2 class="text-xl font-semibold mb-4 text-primary">My Support Tickets</h2>
+                            
+                            <ul class="space-y-4">
+                                <li class="border-b pb-3">
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Accessibility Feature Request</span>
+                                        <span class="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Open</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-1">Request for additional screen reader compatibility</div>
+                                    <div class="text-xs text-gray-500 mt-1">Submitted: Nov 12, 2023</div>
+                                </li>
+                                <li class="border-b pb-3">
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Course Registration Issue</span>
+                                        <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">Resolved</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-1">Unable to register for CSC 301</div>
+                                    <div class="text-xs text-gray-500 mt-1">Submitted: Oct 28, 2023</div>
+                                </li>
+                                <li>
+                                    <div class="flex justify-between">
+                                        <span class="font-medium">Result Inquiry</span>
+                                        <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">Resolved</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-1">Missing grade for MAT 201</div>
+                                    <div class="text-xs text-gray-500 mt-1">Submitted: Sep 15, 2023</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">University of Ilorin</h3>
+                    <p class="text-gray-300">Providing accessible education for all students, regardless of ability.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Accessibility Statement</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone mr-2 text-gray-300" aria-hidden="true"></i>
+                            <span>+234 123 456 7890</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope mr-2 text-gray-300" aria-hidden="true"></i>
+                            <span>accessibility@unilorin.edu.ng</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-location-dot mr-2 text-gray-300" aria-hidden="true"></i>
+                            <span>Ilorin, Kwara State, Nigeria</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2025 University of Ilorin. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Keyboard Shortcut Modal -->
+    <div id="keyboardModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-primary">Keyboard Shortcuts</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div class="flex justify-between border-b pb-2">
+                    <span class="font-medium">Skip to main content</span>
+                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">Tab</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="font-medium">Increase text size</span>
+                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">Ctrl + +</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="font-medium">Decrease text size</span>
+                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">Ctrl + -</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="font-medium">High contrast mode</span>
+                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">Ctrl + H</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="font-medium">Read page content</span>
+                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">Ctrl + R</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Close modal</span>
+                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">Esc</span>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <button id="confirmModal" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                    OK, I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Text Size Adjustment
+        document.getElementById('textSize').addEventListener('click', function() {
+            const html = document.documentElement;
+            const currentSize = parseFloat(getComputedStyle(html).fontSize);
+            const newSize = currentSize === 16 ? 20 : currentSize === 20 ? 24 : 16;
+            html.style.fontSize = `${newSize}px`;
+            speak(`Text size set to ${newSize} pixels`);
+        });
+
+        // High Contrast Mode
+        document.getElementById('highContrast').addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast');
+            const isOn = document.body.classList.contains('high-contrast');
+            speak(`High contrast mode ${isOn ? 'enabled' : 'disabled'}`);
+        });
+
+        // Read Page Content
+        document.getElementById('speakPage').addEventListener('click', function() {
+            const pageTitle = document.querySelector('.page.active h1').textContent;
+            const pageDesc = document.querySelector('.page.active p').textContent;
+            speak(`You are on the ${pageTitle} page. ${pageDesc}`);
+        });
+
+        // Keyboard Help
+        document.getElementById('keyboardHelp').addEventListener('click', function() {
+            speak("Showing keyboard shortcuts. Press escape to close this dialog.");
+            document.getElementById('keyboardModal').classList.remove('hidden');
+            document.getElementById('keyboardModal').setAttribute('aria-hidden', 'false');
+        });
+
+        // Close Modal
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('keyboardModal').classList.add('hidden');
+        });
+
+        document.getElementById('confirmModal').addEventListener('click', function() {
+            document.getElementById('keyboardModal').classList.add('hidden');
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !document.getElementById('keyboardModal').classList.contains('hidden')) {
+                document.getElementById('keyboardModal').classList.add('hidden');
+            }
+        });
+
+        // Login Simulation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('sidebar').classList.remove('hidden');
+            speak('Login successful. Welcome to your student dashboard.');
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('active'); 
+            document.getElementById('login').classList.remove('hidden');
+            document.querySelector('.sidebar').classList.remove('open');
+            document.getElementById('sidebar').classList.add('hidden');
+            document.getElementById('overlay').classList.remove('open');
+            speak('You have been logged out. Returning to login page.');
+        });
+
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+                
+                // Set active page
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById(targetPage).classList.add('active');
+                
+                // Update active nav link
+                navLinks.forEach(navLink => {
+                    navLink.parentElement.classList.remove('bg-primary', 'text-white');
+                    navLink.classList.remove('text-white');
+                    navLink.classList.add('text-gray-700');
+                });
+                
+                this.parentElement.classList.add('bg-primary', 'text-white');
+                this.classList.add('text-white');
+                this.classList.remove('text-gray-700');
+                
+                // Close mobile menu if open
+                document.querySelector('.sidebar').classList.remove('open');
+                document.getElementById('overlay').classList.remove('open');
+                
+                // Announce page change
+                speak(`Navigated to ${targetPage} page`);
+            });
+        });
+
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+            
+            if(sidebar.classList.contains('open')) {
+                speak("Navigation menu opened");
+            } else {
+                speak("Navigation menu closed");
+            }
+        });
+
+        // Close sidebar when clicking on overlay
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('open');
+            this.classList.remove('open');
+            speak("Navigation menu closed");
+        });
+
+
+        // Text-to-Speech Function
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }else {
+                alert('Text-to-speech is not supported in your browser.');
+            }
+        }
+
+        // Add focus styles for keyboard navigation
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'Tab') {
+                document.documentElement.classList.add('keyboard-nav');
+            }
+        });
+
+        document.addEventListener('mousedown', function() {
+            document.documentElement.classList.remove('keyboard-nav');
+        });
+    </script>
+</body>
+</html>
