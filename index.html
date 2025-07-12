@@ -104,6 +104,38 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        /* New styles for accessibility features */
+        .readable-section {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .readable-section:hover {
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        .readable-section.reading {
+            box-shadow: 0 0 0 4px var(--accent);
+            background-color: rgba(237, 137, 54, 0.1);
+        }
+        .section-read-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+        .readable-section:hover .section-read-button {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -117,6 +149,9 @@
         </button>
         <button id="speakPage" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
             <i class="fa-solid fa-volume-up mr-1"></i> Read Page
+        </button>
+        <button id="speakSection" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent hidden">
+            <i class="fa-solid fa-wave-square mr-1"></i> Read Section
         </button>
         <button id="keyboardHelp" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
             <i class="fa-solid fa-keyboard mr-1"></i> Keyboard Help
@@ -160,12 +195,6 @@
             </div>
             <nav class="p-2">
                 <ul class="space-y-1">
-                    <!-- <li>
-                        <a href="#" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg bg-primary text-white">
-                            <i class="fa-solid fa-chart-line mr-3"></i>
-                            Dashboard
-                        </a>
-                    </li> -->
                     <li>
                         <a href="#" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
                             <i class="fa-solid fa-chart-line mr-3"></i>
@@ -211,7 +240,10 @@
 
         <!-- Main Content -->
         <main id="main-content" class="flex-1 p-4 md:p-6">
-            <section id="login" class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+            <section id="login" class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto readable-section">
+                <div class="section-read-button">
+                    <i class="fa-solid fa-volume-up text-xs"></i>
+                </div>
                 <h2 class="text-2xl font-bold mb-6 text-center text-primary">Student Portal Login</h2>
                 <form id="loginForm" class="space-y-4">
                     <div>
@@ -253,7 +285,10 @@
                 
                 <!-- User Info Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white rounded-lg shadow p-4">
+                    <div class="bg-white rounded-lg shadow p-4 readable-section">
+                        <div class="section-read-button">
+                            <i class="fa-solid fa-volume-up text-xs"></i>
+                        </div>
                         <div class="flex items-center mb-3">
                             <div class="bg-blue-100 p-2 rounded-full mr-3">
                                 <i class="fa-solid fa-id-card text-blue-600"></i>
@@ -280,7 +315,10 @@
                         </ul>
                     </div>
                     
-                    <div class="bg-white rounded-lg shadow p-4">
+                    <div class="bg-white rounded-lg shadow p-4 readable-section">
+                        <div class="section-read-button">
+                            <i class="fa-solid fa-volume-up text-xs"></i>
+                        </div>
                         <div class="flex items-center mb-3">
                             <div class="bg-green-100 p-2 rounded-full mr-3">
                                 <i class="fa-solid fa-book text-green-600"></i>
@@ -307,7 +345,10 @@
                         </ul>
                     </div>
                     
-                    <div class="bg-white rounded-lg shadow p-4">
+                    <div class="bg-white rounded-lg shadow p-4 readable-section">
+                        <div class="section-read-button">
+                            <i class="fa-solid fa-volume-up text-xs"></i>
+                        </div>
                         <div class="flex items-center mb-3">
                             <div class="bg-orange-100 p-2 rounded-full mr-3">
                                 <i class="fa-solid fa-money-bill-wave text-orange-600"></i>
@@ -336,7 +377,10 @@
                 </div>
                 
                 <!-- Recent Activities -->
-                <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6 mb-8 readable-section">
+                    <div class="section-read-button">
+                        <i class="fa-solid fa-volume-up text-xs"></i>
+                    </div>
                     <h2 class="text-xl font-semibold mb-4 text-primary">Recent Activities</h2>
                     <ul class="space-y-4">
                         <li class="flex items-start">
@@ -412,13 +456,16 @@
             </div>
             
             <!-- Courses Page -->
-            <div id="courses" class="page page-content">
+            <div id="courses" class="page page-content hidden">
                 <div class="mb-6">
                     <h1 class="text-2xl font-bold text-primary">Course Registration</h1>
                     <p class="text-gray-600">Register for your courses for the 2024/2025 academic session</p>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <div class="bg-white rounded-lg shadow p-6 mb-6 readable-section">
+                    <div class="section-read-button">
+                        <i class="fa-solid fa-volume-up text-xs"></i>
+                    </div>
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                         <div>
                             <h2 class="text-xl font-semibold">Available Courses</h2>
@@ -543,7 +590,10 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-6 readable-section">
+                    <div class="section-read-button">
+                        <i class="fa-solid fa-volume-up text-xs"></i>
+                    </div>
                     <h2 class="text-xl font-semibold mb-4 text-primary">Registered Courses</h2>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -638,7 +688,7 @@
             </div>
             
             <!-- Fees Page -->
-            <div id="fees" class="page page-content">
+            <div id="fees" class="page page-content hidden">
                 <div class="mb-6">
                     <h1 class="text-2xl font-bold text-primary">Fees Payment</h1>
                     <p class="text-gray-600">View and manage your tuition fees for the 2023/2024 academic session</p>
@@ -646,7 +696,10 @@
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">Fee Summary</h2>
                             
                             <div class="border rounded-lg mb-6">
@@ -708,7 +761,10 @@
                     </div>
                     
                     <div>
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">Make Payment</h2>
                             
                             <div class="mb-6">
@@ -740,7 +796,10 @@
                             </div>
                         </div>
                         
-                        <div class="bg-white rounded-lg shadow p-6 mt-6">
+                        <div class="bg-white rounded-lg shadow p-6 mt-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">Payment History</h2>
                             <ul class="space-y-4">
                                 <li class="border-b pb-3">
@@ -774,13 +833,16 @@
             </div>
             
             <!-- Results Page -->
-            <div id="results" class="page page-content">
+            <div id="results" class="page page-content hidden">
                 <div class="mb-6">
                     <h1 class="text-2xl font-bold text-primary">Exam Results</h1>
                     <p class="text-gray-600">View your examination results and academic performance</p>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <div class="bg-white rounded-lg shadow p-6 mb-6 readable-section">
+                    <div class="section-read-button">
+                        <i class="fa-solid fa-volume-up text-xs"></i>
+                    </div>
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
                         <div>
                             <h2 class="text-xl font-semibold">Academic Summary</h2>
@@ -845,7 +907,10 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-6 readable-section">
+                    <div class="section-read-button">
+                        <i class="fa-solid fa-volume-up text-xs"></i>
+                    </div>
                     <h2 class="text-xl font-semibold mb-4 text-primary">Course Results - 2023/2024 First Semester</h2>
                     
                     <div class="overflow-x-auto">
@@ -1076,7 +1141,7 @@
             </div>
             
             <!-- Support Page -->
-            <div id="support" class="page page-content">
+            <div id="support" class="page page-content hidden">
                 <div class="mb-6">
                     <h1 class="text-2xl font-bold text-primary">Support Center</h1>
                     <p class="text-gray-600">Get help, report issues, or provide feedback</p>
@@ -1084,7 +1149,10 @@
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">Submit a Request</h2>
                             
                             <form class="space-y-4">
@@ -1127,7 +1195,10 @@
                             </form>
                         </div>
                         
-                        <div class="bg-white rounded-lg shadow p-6 mt-6">
+                        <div class="bg-white rounded-lg shadow p-6 mt-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">Frequently Asked Questions</h2>
                             
                             <div class="space-y-4">
@@ -1152,7 +1223,10 @@
                     </div>
                     
                     <div>
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">Contact Information</h2>
                             
                             <div class="space-y-4">
@@ -1193,7 +1267,10 @@
                             </div>
                         </div>
                         
-                        <div class="bg-white rounded-lg shadow p-6 mt-6">
+                        <div class="bg-white rounded-lg shadow p-6 mt-6 readable-section">
+                            <div class="section-read-button">
+                                <i class="fa-solid fa-volume-up text-xs"></i>
+                            </div>
                             <h2 class="text-xl font-semibold mb-4 text-primary">My Support Tickets</h2>
                             
                             <ul class="space-y-4">
@@ -1331,9 +1408,27 @@
 
         // Read Page Content
         document.getElementById('speakPage').addEventListener('click', function() {
-            const pageTitle = document.querySelector('.page.active h1').textContent;
-            const pageDesc = document.querySelector('.page.active p').textContent;
-            speak(`You are on the ${pageTitle} page. ${pageDesc}`);
+            // Determine which page is active
+            let contentElement;
+            if (!document.getElementById('login').classList.contains('hidden')) {
+                contentElement = document.getElementById('login');
+            } else {
+                contentElement = document.querySelector('.page.active');
+            }
+            
+            if (contentElement) {
+                // Clean and read the content
+                const content = cleanTextForSpeech(contentElement.textContent);
+                speak(content, contentElement);
+            }
+        });
+
+        // Read Section Content
+        document.getElementById('speakSection').addEventListener('click', function() {
+            if (window.activeSection) {
+                const content = cleanTextForSpeech(window.activeSection.textContent);
+                speak(content, window.activeSection);
+            }
         });
 
         // Keyboard Help
@@ -1366,6 +1461,8 @@
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('dashboard').classList.add('active');
             document.getElementById('sidebar').classList.remove('hidden');
+            // Show the section read button
+            document.getElementById('speakSection').classList.remove('hidden');
             speak('Login successful. Welcome to your student dashboard.');
         });
 
@@ -1377,7 +1474,14 @@
             document.querySelector('.sidebar').classList.remove('open');
             document.getElementById('sidebar').classList.add('hidden');
             document.getElementById('overlay').classList.remove('open');
+            // Hide the section read button
+            document.getElementById('speakSection').classList.add('hidden');
             speak('You have been logged out. Returning to login page.');
+            function reloadPage() {
+                window.location.reload();
+            }
+            //reload the page
+            reloadPage();
         });
 
         // Navigation
@@ -1392,8 +1496,10 @@
                 // Set active page
                 pages.forEach(page => {
                     page.classList.remove('active');
+                    page.classList.add('hidden');
                 });
                 document.getElementById(targetPage).classList.add('active');
+                document.getElementById(targetPage).classList.remove('hidden');
                 
                 // Update active nav link
                 navLinks.forEach(navLink => {
@@ -1437,18 +1543,75 @@
             speak("Navigation menu closed");
         });
 
+        // Section reading functionality
+        const readableSections = document.querySelectorAll('.readable-section');
+        readableSections.forEach(section => {
+            // Add click event for the entire section
+            section.addEventListener('click', function(e) {
+                // Ignore clicks on buttons, links, inputs, etc.
+                if (e.target.tagName === 'BUTTON' || 
+                    e.target.tagName === 'A' || 
+                    e.target.tagName === 'INPUT' || 
+                    e.target.tagName === 'SELECT' || 
+                    e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+                
+                // Read the section content
+                const content = cleanTextForSpeech(this.textContent);
+                speak(content, this);
+            });
+            
+            // Add click event for the section read button
+            const readButton = section.querySelector('.section-read-button');
+            if (readButton) {
+                readButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const content = cleanTextForSpeech(section.textContent);
+                    speak(content, section);
+                });
+            }
+        });
 
-        // Text-to-Speech Function
-        function speak(text) {
+        // Text-to-Speech Function with enhancements
+        function speak(text, element = null) {
             if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Remove reading state from all sections
+                document.querySelectorAll('.readable-section').forEach(section => {
+                    section.classList.remove('reading');
+                });
+                
+                // If element is provided, add reading state
+                if (element) {
+                    element.classList.add('reading');
+                    window.activeSection = element;
+                }
+                
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.rate = 1.0;
                 utterance.pitch = 1.0;
                 utterance.volume = 1.0;
+                
+                // When speech ends, remove the reading state
+                utterance.onend = function() {
+                    if (element) {
+                        element.classList.remove('reading');
+                    }
+                };
+                
                 window.speechSynthesis.speak(utterance);
-            }else {
+            } else {
                 alert('Text-to-speech is not supported in your browser.');
             }
+        }
+
+        // Clean text for better speech output
+        function cleanTextForSpeech(text) {
+            // Remove extra whitespace and newlines
+            return text.replace(/\s+/g, ' ').trim();
         }
 
         // Add focus styles for keyboard navigation
