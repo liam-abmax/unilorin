@@ -25,6 +25,7 @@
         .sidebar {
             transition: transform 0.3s ease-in-out;
         }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -32,9 +33,11 @@
                 height: 100vh;
                 z-index: 40;
             }
+
             .sidebar.open {
                 transform: translateX(0);
             }
+
             .overlay {
                 display: none;
                 position: fixed;
@@ -42,16 +45,19 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: rgba(0,0,0,0.5);
+                background-color: rgba(0, 0, 0, 0.5);
                 z-index: 30;
             }
+
             .overlay.open {
                 display: block;
             }
         }
+
         .page-content {
             transition: opacity 0.3s ease;
         }
+
         .high-contrast {
             --primary: #000000;
             --secondary: #ffffff;
@@ -61,62 +67,80 @@
             background-color: #000 !important;
             color: #fff !important;
         }
+
         .high-contrast .bg-white {
             background-color: #000 !important;
             color: #fff !important;
             border-color: #fff !important;
         }
-        .high-contrast .text-gray-600, 
-        .high-contrast .text-gray-700, 
-        .high-contrast .text-gray-300, 
+
+        .high-contrast .text-gray-600,
+        .high-contrast .text-gray-700,
+        .high-contrast .text-gray-300,
         .high-contrast .text-gray-500,
         .high-contrast .text-gray-400 {
             color: #fff !important;
         }
+
         .high-contrast .bg-primary {
             background-color: #000 !important;
             color: #fff !important;
             border: 2px solid #fff;
         }
+
         .high-contrast .bg-gray-100 {
             background-color: #000 !important;
         }
+
         .high-contrast .shadow-lg,
         .high-contrast .shadow-md {
             box-shadow: 0 0 0 2px #fff !important;
         }
-        .keyboard-nav a:focus, 
-        .keyboard-nav button:focus, 
-        .keyboard-nav input:focus, 
-        .keyboard-nav select:focus, 
+
+        .keyboard-nav a:focus,
+        .keyboard-nav button:focus,
+        .keyboard-nav input:focus,
+        .keyboard-nav select:focus,
         .keyboard-nav textarea:focus {
             outline: 3px solid #ff0 !important;
             outline-offset: 2px;
         }
+
         .page {
             display: none;
         }
+
         .page.active {
             display: block;
             animation: fadeIn 0.5s ease;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         /* New styles for accessibility features */
         .readable-section {
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
         }
+
         .readable-section:hover {
             box-shadow: 0 0 0 2px var(--accent);
         }
+
         .readable-section.reading {
             box-shadow: 0 0 0 4px var(--accent);
             background-color: rgba(237, 137, 54, 0.1);
         }
+
         .section-read-button {
             position: absolute;
             top: 8px;
@@ -133,34 +157,70 @@
             transition: opacity 0.3s ease;
             z-index: 10;
         }
+
         .readable-section:hover .section-read-button {
             opacity: 1;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <!-- Accessibility Controls -->
     <div class="bg-gray-800 text-white p-2 flex flex-wrap gap-3 justify-center items-center">
-        <button id="textSize" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+        <button id="textSize"
+            class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
             <i class="fa-solid fa-text-size mr-1"></i> Text Size
         </button>
-        <button id="highContrast" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+        <button id="highContrast"
+            class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
             <i class="fa-solid fa-moon mr-1"></i> High Contrast
         </button>
-        <button id="speakPage" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+        <button id="speakPage"
+            class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
             <i class="fa-solid fa-volume-up mr-1"></i> Read Page
         </button>
-        <button id="speakSection" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent hidden">
+        <button id="speakSection"
+            class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent hidden keyboard-nav">
             <i class="fa-solid fa-wave-square mr-1"></i> Read Section
         </button>
-        <button id="keyboardHelp" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent">
+        <button id="keyboardHelp"
+            class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
             <i class="fa-solid fa-keyboard mr-1"></i> Keyboard Help
+        </button>
+        <!-- Speech Assistant Button -->
+        <button id="speechAssistantBtn"
+            class="px-3 py-1 bg-purple-700 rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
+            <i class="fa-solid fa-microphone mr-1"></i> Speech Assistant
         </button>
     </div>
 
+    <!-- Speech Assistant Panel -->
+    <div id="speechPanel"
+        class="bg-gray-900 text-white p-4 rounded-b-lg shadow-lg mx-auto max-w-lg hidden"
+        style="width: calc(100% - 2rem); margin-top: -1px;">
+        <p id="speechStatus" class="font-medium text-center mb-2">Idle</p>
+        <div id="speechCommandsList" class="text-sm border-t border-gray-700 pt-2 hidden">
+            <p class="font-semibold mb-1">Try saying:</p>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1 list-none p-0">
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Go to Dashboard"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Go to Courses"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Go to Fees"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Go to Results"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Go to Support"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Logout"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Read page"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"High contrast"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Text size"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Keyboard help"</span></li>
+                <li><span class="bg-gray-700 px-2 py-1 rounded-full text-xs">"Stop listening"</span></li>
+            </ul>
+        </div>
+    </div>
+
     <!-- Skip Navigation -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:px-4 focus:py-2 focus:z-50 focus:ring-2 focus:ring-accent">
-        Skip to main content
+    <a href="#main-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:px-4 focus:py-2 focus:z-50 focus:ring-2 focus:ring-accent">Skip
+        to main content
     </a>
 
     <!-- Mobile Header -->
@@ -196,37 +256,37 @@
             <nav class="p-2">
                 <ul class="space-y-1">
                     <li>
-                        <a href="#" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                        <a href="#" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 keyboard-nav">
                             <i class="fa-solid fa-chart-line mr-3"></i>
                             Dashboard
                         </a>
                     </li>
                     <li>
-                        <a href="#" data-page="courses" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                        <a href="#" data-page="courses" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 keyboard-nav">
                             <i class="fa-solid fa-book mr-3"></i>
                             Course Registration
                         </a>
                     </li>
                     <li>
-                        <a href="#" data-page="fees" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                        <a href="#" data-page="fees" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 keyboard-nav">
                             <i class="fa-solid fa-money-bill mr-3"></i>
                             Fees Payment
                         </a>
                     </li>
                     <li>
-                        <a href="#" data-page="results" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                        <a href="#" data-page="results" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 keyboard-nav">
                             <i class="fa-solid fa-file-lines mr-3"></i>
                             Exam Results
                         </a>
                     </li>
                     <li>
-                        <a href="#" data-page="support" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                        <a href="#" data-page="support" class="nav-link flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 keyboard-nav">
                             <i class="fa-solid fa-headset mr-3"></i>
                             Support
                         </a>
                     </li>
                     <li>
-                        <button id="logoutBtn" class="w-full text-left flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent">
+                        <button id="logoutBtn" class="w-full text-left flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
                             <i class="fa-solid fa-right-from-bracket mr-3"></i>
                             Logout
                         </button>
@@ -249,26 +309,26 @@
                     <div>
                         <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                         <input type="text" id="username" name="username" required 
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-secondary keyboard-nav"
                             aria-required="true">
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                         <input type="password" id="password" name="password" required 
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-secondary"
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-secondary keyboard-nav"
                             aria-required="true">
                     </div>
                     <div class="flex items-center">
-                        <input type="checkbox" id="remember" name="remember" class="mr-2">
+                        <input type="checkbox" id="remember" name="remember" class="mr-2 keyboard-nav">
                         <label for="remember" class="text-sm text-gray-700">Remember me</label>
                     </div>
-                    <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                    <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 keyboard-nav">
                         Login
                     </button>
                 </form>
                 <div class="mt-4 text-center">
-                    <p class="text-sm text-gray-600">Don't have an account? <a href="#register" class="text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Register here</a></p>
-                    <p class="text-sm text-gray-600 mt-2"><a href="#" class="text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Forgot password?</a></p>
+                    <p class="text-sm text-gray-600">Don't have an account? <a href="#register" class="text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">Register here</a></p>
+                    <p class="text-sm text-gray-600 mt-2"><a href="#" class="text-secondary hover:underline focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">Forgot password?</a></p>
                 </div>
             </section>
             <!-- Dashboard Page -->
@@ -428,25 +488,25 @@
                 
                 <!-- Quick Actions -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <a href="#" data-page="courses" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                    <a href="#" data-page="courses" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow keyboard-nav">
                         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i class="fa-solid fa-book text-blue-600 text-xl"></i>
                         </div>
                         <p class="font-medium">Course Registration</p>
                     </a>
-                    <a href="#" data-page="fees" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                    <a href="#" data-page="fees" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow keyboard-nav">
                         <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i class="fa-solid fa-money-bill text-green-600 text-xl"></i>
                         </div>
                         <p class="font-medium">Pay Fees</p>
                     </a>
-                    <a href="#" data-page="results" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                    <a href="#" data-page="results" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow keyboard-nav">
                         <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i class="fa-solid fa-file-lines text-purple-600 text-xl"></i>
                         </div>
                         <p class="font-medium">View Results</p>
                     </a>
-                    <a href="#" data-page="support" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow">
+                    <a href="#" data-page="support" class="nav-link bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow keyboard-nav">
                         <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i class="fa-solid fa-headset text-orange-600 text-xl"></i>
                         </div>
@@ -472,7 +532,7 @@
                             <p class="text-sm text-gray-600">Select courses for registration</p>
                         </div>
                         <div class="mt-4 md:mt-0">
-                            <button class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent">
+                            <button class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
                                 <i class="fa-solid fa-plus mr-2"></i>Add Selected Courses
                             </button>
                         </div>
@@ -502,7 +562,7 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <tr>
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary keyboard-nav">
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">CSC 301</div>
@@ -519,7 +579,7 @@
                                 </tr>
                                 <tr class="bg-gray-50">
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary keyboard-nav" checked>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">CSC 303</div>
@@ -536,7 +596,7 @@
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary keyboard-nav" checked>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">CSC 305</div>
@@ -553,7 +613,7 @@
                                 </tr>
                                 <tr class="bg-gray-50">
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary">
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary keyboard-nav">
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">CSC 307</div>
@@ -570,7 +630,7 @@
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary" checked>
+                                        <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary keyboard-nav" checked>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">CSC 309</div>
@@ -631,7 +691,7 @@
                                         <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Approved</span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 keyboard-nav">
                                             <i class="fa-solid fa-trash"></i> Drop
                                         </button>
                                     </td>
@@ -650,7 +710,7 @@
                                         <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Approved</span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 keyboard-nav">
                                             <i class="fa-solid fa-trash"></i> Drop
                                         </button>
                                     </td>
@@ -669,7 +729,7 @@
                                         <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
-                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                        <button class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 keyboard-nav">
                                             <i class="fa-solid fa-trash"></i> Drop
                                         </button>
                                     </td>
@@ -770,11 +830,11 @@
                             <div class="mb-6">
                                 <label class="block text-gray-700 mb-2">Payment Method</label>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <button class="border rounded-lg p-4 text-center hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <button class="border rounded-lg p-4 text-center hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                                         <i class="fa-solid fa-credit-card text-2xl mb-2 text-blue-500"></i>
                                         <p>Card Payment</p>
                                     </button>
-                                    <button class="border rounded-lg p-4 text-center hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <button class="border rounded-lg p-4 text-center hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                                         <i class="fa-solid fa-building-columns text-2xl mb-2 text-green-500"></i>
                                         <p>Bank Transfer</p>
                                     </button>
@@ -783,10 +843,10 @@
                             
                             <div class="mb-4">
                                 <label class="block text-gray-700 mb-2">Amount to Pay (₦)</label>
-                                <input type="number" value="37500" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary">
+                                <input type="number" value="37500" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                             </div>
                             
-                            <button class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent">
+                            <button class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
                                 Proceed to Payment
                             </button>
                             
@@ -849,7 +909,7 @@
                             <p class="text-sm text-gray-600">Cumulative Grade Point Average (CGPA)</p>
                         </div>
                         <div class="mt-4 md:mt-0">
-                            <select class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <select class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                                 <option>2023/2024 Academic Session</option>
                                 <option>2022/2023 Academic Session</option>
                                 <option>2021/2022 Academic Session</option>
@@ -1158,7 +1218,7 @@
                             <form class="space-y-4">
                                 <div>
                                     <label class="block text-gray-700 mb-2">Request Type</label>
-                                    <select class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <select class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                                         <option>Select request type</option>
                                         <option>Technical Support</option>
                                         <option>Academic Issue</option>
@@ -1171,25 +1231,25 @@
                                 
                                 <div>
                                     <label class="block text-gray-700 mb-2">Subject</label>
-                                    <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-gray-700 mb-2">Description</label>
-                                    <textarea rows="6" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                                    <textarea rows="6" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav"></textarea>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-gray-700 mb-2">Attachment (Optional)</label>
                                     <div class="flex items-center">
-                                        <input type="file" class="flex-1">
-                                        <button class="ml-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <input type="file" class="flex-1 keyboard-nav">
+                                        <button class="ml-2 bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary keyboard-nav">
                                             <i class="fa-solid fa-paperclip"></i>
                                         </button>
                                     </div>
                                 </div>
                                 
-                                <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent">
+                                <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
                                     Submit Request
                                 </button>
                             </form>
@@ -1317,9 +1377,9 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Accessibility Statement</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent">Contact Support</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">Accessibility Statement</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white hover:underline focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">Contact Support</a></li>
                     </ul>
                 </div>
                 <div>
@@ -1351,7 +1411,7 @@
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-primary">Keyboard Shortcuts</h3>
-                <button id="closeModal" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent">
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent keyboard-nav">
                     <i class="fa-solid fa-times"></i>
                 </button>
             </div>
@@ -1382,7 +1442,7 @@
                 </div>
             </div>
             <div class="mt-6 text-center">
-                <button id="confirmModal" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
+                <button id="confirmModal" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 keyboard-nav">
                     OK, I Understand
                 </button>
             </div>
@@ -1592,8 +1652,8 @@
                 
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
+                utterance.pitch = 0.9;
+                utterance.volume = 0.9;
                 
                 // When speech ends, remove the reading state
                 utterance.onend = function() {
@@ -1604,7 +1664,8 @@
                 
                 window.speechSynthesis.speak(utterance);
             } else {
-                alert('Text-to-speech is not supported in your browser.');
+                // Replaced alert with console.warn for better user experience in an iframe
+                console.warn('Text-to-speech is not supported in your browser.');
             }
         }
 
@@ -1624,6 +1685,152 @@
         document.addEventListener('mousedown', function() {
             document.documentElement.classList.remove('keyboard-nav');
         });
+
+        // Speech Assistant Feature
+        const speechAssistantBtn = document.getElementById('speechAssistantBtn');
+        const speechPanel = document.getElementById('speechPanel');
+        const speechStatus = document.getElementById('speechStatus');
+        const speechCommandsList = document.getElementById('speechCommandsList');
+
+        let recognition;
+        let isListening = false;
+
+        // Check for Web Speech API compatibility
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false; // Listen for a single utterance
+            recognition.interimResults = false; // Only return final results
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                speechStatus.textContent = 'Listening... Say "Stop listening" to stop.';
+                speechAssistantBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+                speechAssistantBtn.classList.remove('bg-purple-700', 'hover:bg-purple-600');
+                speechCommandsList.classList.remove('hidden');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                speechStatus.textContent = `Heard: "${transcript}"`;
+                console.log('Speech recognized:', transcript);
+                processSpeechCommand(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                speechStatus.textContent = `Error: ${event.error}. Please try again.`;
+                isListening = false;
+                speechAssistantBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                speechAssistantBtn.classList.add('bg-purple-700', 'hover:bg-purple-600');
+                setTimeout(() => {
+                    if (!isListening) {
+                        speechPanel.classList.add('hidden');
+                        speechCommandsList.classList.add('hidden');
+                    }
+                }, 2000); // Hide after 2 seconds
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                speechStatus.textContent = 'Idle. Click to start listening.';
+                speechAssistantBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                speechAssistantBtn.classList.add('bg-purple-700', 'hover:bg-purple-600');
+                setTimeout(() => {
+                    if (!isListening) { // Only hide if not immediately restarting
+                        speechPanel.classList.add('hidden');
+                        speechCommandsList.classList.add('hidden');
+                    }
+                }, 2000); // Hide after 2 seconds of inactivity
+            };
+
+            speechAssistantBtn.addEventListener('click', () => {
+                if (speechPanel.classList.contains('hidden')) {
+                    // If panel is hidden, show it and start listening
+                    speechPanel.classList.remove('hidden');
+                    speechCommandsList.classList.remove('hidden');
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Speech recognition already started or error:", e);
+                        speechStatus.textContent = "Error starting recognition. Please try again.";
+                        speak("Error starting recognition. Please try again.");
+                    }
+                } else {
+                    // If panel is visible, stop listening and hide it
+                    recognition.stop();
+                    speechPanel.classList.add('hidden');
+                    speechCommandsList.classList.add('hidden');
+                }
+            });
+
+            function processSpeechCommand(command) {
+                let feedbackText = '';
+                if (command.includes('stop listening')) {
+                    recognition.stop();
+                    feedbackText = 'Stopping speech assistant.';
+                } else if (command.includes('go to dashboard') || command.includes('dashboard screen')) {
+                    document.querySelector('[data-page="dashboard"]').click();
+                    feedbackText = 'Navigating to Dashboard.';
+                } else if (command.includes('go to courses') || command.includes('course registration')) {
+                    document.querySelector('[data-page="courses"]').click();
+                    feedbackText = 'Navigating to Course Registration.';
+                } else if (command.includes('go to fees') || command.includes('fees payment')) {
+                    document.querySelector('[data-page="fees"]').click();
+                    feedbackText = 'Navigating to Fees Payment.';
+                } else if (command.includes('go to results') || command.includes('exam results')) {
+                    document.querySelector('[data-page="results"]').click();
+                    feedbackText = 'Navigating to Exam Results.';
+                } else if (command.includes('go to support') || command.includes('get support') || command.includes('support center')) {
+                    document.querySelector('[data-page="support"]').click();
+                    feedbackText = 'Navigating to Support.';
+                } else if (command.includes('logout') || command.includes('sign out') || command.includes('exit') || command.includes('log out')) {
+                    document.getElementById('logoutBtn').click();
+                    feedbackText = 'Logging out.';
+                } else if (command.includes('open menu') || command.includes('toggle menu')) {
+                    document.getElementById('menuToggle').click();
+                    feedbackText = 'Toggling navigation menu.';
+                } else if (command.includes('keyboard shortcuts') || command.includes('keyboard help')) {
+                    document.getElementById('keyboardHelp').click();
+                    feedbackText = 'Displaying keyboard shortcuts.';
+                } else if (command.includes('increase text size')) {
+                    document.getElementById('textSize').click();
+                    feedbackText = 'Increasing text size.';
+                } else if (command.includes('decrease text size')) {
+                    document.getElementById('textSize').click();
+                    feedbackText = 'Decreasing text size.';
+                } else if (command.includes('read page')) {
+                    document.getElementById('speakPage').click();
+                    feedbackText = 'Reading page.';
+                } else if (command.includes('read section')) {
+                    document.getElementById('speakSection').click();
+                    feedbackText = 'Activating Read Section mode.';
+                } else if (command.includes('high contrast')) {
+                    document.getElementById('highContrast').click();
+                    feedbackText = 'Toggling high contrast mode.';
+                } else if (command.includes('text size')) {
+                    document.getElementById('textSize').click();
+                    feedbackText = 'Adjusting text size.';
+                } else if (command.includes('keyboard help')) {
+                    document.getElementById('keyboardHelp').click();
+                    feedbackText = 'Displaying keyboard help.';
+                } else {
+                    feedbackText = `Command "${command}" not recognized.`;
+                }
+                speechStatus.textContent = feedbackText;
+                speak(feedbackText); // Provide audible feedback
+                recognition.stop(); // Stop listening after processing a command
+            }
+
+        } else {
+            speechAssistantBtn.disabled = true;
+            speechAssistantBtn.textContent = 'Speech Not Supported';
+            speechAssistantBtn.classList.remove('bg-purple-700', 'hover:bg-purple-600');
+            speechAssistantBtn.classList.add('bg-gray-500', 'cursor-not-allowed');
+            console.warn('Web Speech API is not supported in this browser.');
+            // Optionally hide the panel if speech is not supported
+            speechPanel.classList.add('hidden');
+        }
     </script>
 </body>
 </html>
